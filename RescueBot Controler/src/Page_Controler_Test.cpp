@@ -25,7 +25,7 @@ const char* page_Controler_Test PROGMEM = R"=====(
       height: 100%;
       width: 100%;
       z-index: -1;
-      background: linear-gradient(to top, rgb(100, 150, 255) 0%, rgb(255, 255, 255) 40%);
+      background: linear-gradient(to top, rgb(239, 120, 186) 0%, rgb(255, 255, 255) 40%);
     }
     
     .wrapper {
