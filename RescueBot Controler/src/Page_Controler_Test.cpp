@@ -221,13 +221,16 @@ const char* page_Controler_Test PROGMEM = R"=====(
 		bRight = true;
 		SendData();
 	});
-
-	document.getElementsByClassName('button').addEventListener("touchend", function(){
-		bTop = false;
-		bBottom = false;
-		bLeft = false;
-		bRight = false;
-	});
+	
+	var buttons = document.getElementsByClassName('button')
+	for (var i = 0; i < buttons.length; i++) {
+		buttons[i].addEventListener("touchend", function(){
+			bTop = false;
+			bBottom = false;
+			bLeft = false;
+			bRight = false;
+		});
+	}
 
     function SendData() {
       console.log('Send: /data?top=' + (bTop? 1 : 0) + '&bottom=' + (bBottom? 1 : 0) + '&left=' + (bLeft? 1 : 0) + '&right=' + (bRight? 1 : 0));
