@@ -21,6 +21,11 @@ ESP8266WebServer server(80);
 
 // IO
 const byte ledPin = LED_BUILTIN; // LED_BUILTIN
+//pins for wheels
+int leftForward = 0;
+int leftBackward = 1;
+int rightForward = 2;
+int rightBackward = 3;
 
 // Variables
 byte ledValue;
@@ -35,6 +40,10 @@ void setup()
 {
   Serial.begin(115200);
   pinMode(ledPin, OUTPUT);
+  pinMode(leftForward, OUTPUT);
+  pinMode(leftBackward, OUTPUT);
+  pinMode(rightForward, OUTPUT);
+  pinMode(rightBackward, OUTPUT);
 
 
   /*Serial.print("Connecting to ");
@@ -84,51 +93,54 @@ void HandleData()
   // /data?id=___&w=___
   //byte valId = server.arg("id").toInt();
 
-  //pins for wheels
-  int leftForward = 14;
-  int leftBackward = 12;
-  int rightForward = 13;
-  int rightBackward = 15;
+
 
   bool forward = server.arg("top"); //forward
   bool backward = server.arg("bottom"); //backward
   bool left = server.arg("left"); //go to left
   bool right = server.arg("right"); //go to right
 
-  if (left) {
-    digitalWrite(HIGH, leftForward);
-    digitalWrite(LOW, leftBackward);
-    digitalWrite(LOW, rightForward);
-    digitalWrite(HIGH, rightBackward);
+  forward = true;
+
+   if (left) {
+    digitalWrite(leftForward, HIGH);
+    digitalWrite(leftBackward, LOW);
+    digitalWrite(rightForward, LOW);
+    digitalWrite(rightBackward, HIGH);
+    Serial.println("left");
   } else if (right) {
-    digitalWrite(LOW, leftForward);
-    digitalWrite(HIGH, leftBackward);
-    digitalWrite(HIGH, rightForward);
-    digitalWrite(LOW, rightBackward);
+    digitalWrite(leftForward, LOW);
+    digitalWrite(leftBackward, HIGH);
+    digitalWrite(rightForward, HIGH);
+    digitalWrite(rightBackward, LOW);
+    Serial.println("right");
   } else if (backward) {
-    digitalWrite(LOW, leftForward);
-    digitalWrite(HIGH, leftBackward);
-    digitalWrite(LOW, rightForward);
-    digitalWrite(HIGH, rightBackward);
+    digitalWrite(leftForward, LOW);
+    digitalWrite(leftBackward, HIGH);
+    digitalWrite(rightForward, LOW);
+    digitalWrite(rightBackward, HIGH);
+    Serial.println("backward");
   } else if(forward) { 
-    digitalWrite(HIGH, leftForward);
-    digitalWrite(LOW, leftBackward);
-    digitalWrite(HIGH, rightForward);
-    digitalWrite(LOW, rightBackward);
+    digitalWrite(leftForward, HIGH);
+    digitalWrite(leftBackward, LOW);
+    digitalWrite(rightForward, HIGH);
+    digitalWrite(rightBackward, LOW);
+    Serial.println("forward");
   } else {
     //default
-    digitalWrite(LOW, leftForward);
-    digitalWrite(LOW, leftBackward);
-    digitalWrite(LOW, rightForward);
-    digitalWrite(LOW, rightBackward);
+    digitalWrite(leftForward, LOW);
+    digitalWrite(leftBackward, LOW);
+    digitalWrite(rightForward, LOW);
+    digitalWrite(rightBackward, LOW);
+    Serial.println("default");
   }
   
 
-  //TO Do use controll info
+  /*//TO Do use controll info
   if (valW > 0 && valW <= 10){
     ledValue = valW;
     analogWrite(ledPin, map(valW, 1, 10, 0, 1023));
-  }
+  }*/
 
   /*if (valId > 0)
   {
@@ -143,6 +155,6 @@ void HandleData()
     }
   }*/
 
-  String json = "{\"top\": " + forward + ",\"bottom\":" + backward + ",\"left\":" + left + ",\"right\":" + right +"}";
+  String json = "{\"top\": " + (String)forward + ",\"bottom\": " + (String)backward + ",\"left\": " + (String)left + ",\"right\": " + (String)right +"}";
   server.send(200, "text/json", json);
 }
