@@ -1,6 +1,3 @@
-#include <avr/pgmspace.h>
-
-const char* page_Controler_Test PROGMEM = R"=====(
 <!DOCTYPE html>
 <html>
 
@@ -164,35 +161,8 @@ const char* page_Controler_Test PROGMEM = R"=====(
 		padding: 0;
 	}
   </style>
-</head>
-
-
-
-<body>
-  <div id="bg"></div>
-  <div class="info">
-	<Strong>RescueBot</Strong>
-	<i>Drag the slider to change the brightness of the LED.</i>
-  </div>
-  <div class="container">
-	<div class="left-section">
-		<button class="button left-top"><strong>^</strong></button>
-		<button class="button left-bottom"><strong>v</strong></button>
-	</div>
-	<div class="right-section">
-		<button class="button right-left"><strong><</strong></button>
-		<button class="button right-right"><strong>></strong></button>
-	</div>
-  </div>
-  <!--<div class='wrapper'>
-    <div class='first'>
-      <input id='rangeW' class='range' type='range' min='1' max='10' value='1'>
-    </div>
-    <div class='second'>
-      <p>White: <span id='textW'></span></p>
-    </div>
-  </div>-->
-  <script>
+    
+    <script>
     //var url_string = window.location.href;
     //var url = new URL(url_string);
     //var id = url.searchParams.get("id");
@@ -236,6 +206,35 @@ const char* page_Controler_Test PROGMEM = R"=====(
       xhttp.send();
     }
   </script>
+
+</head>
+
+
+
+<body>
+  <div id="bg"></div>
+  <div class="info">
+	<Strong>RescueBot</Strong>
+	<i>Drag the slider to change the brightness of the LED.</i>
+  </div>
+  <div class="container">
+	<div class="left-section">
+		<button class="button left-top"><strong>^</strong></button>
+		<button class="button left-bottom"><strong>v</strong></button>
+	</div>
+	<div class="right-section">
+		<button class="button right-left"><strong><</strong></button>
+		<button class="button right-right"><strong>></strong></button>
+	</div>
+  </div>
+  <!--<div class='wrapper'>
+    <div class='first'>
+      <input id='rangeW' class='range' type='range' min='1' max='10' value='1'>
+    </div>
+    <div class='second'>
+      <p>White: <span id='textW'></span></p>
+    </div>
+  </div>-->
 </body>
+
 </html>
-)=====";
