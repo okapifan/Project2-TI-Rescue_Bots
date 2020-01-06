@@ -229,6 +229,7 @@ const char* page_Controler_Test PROGMEM = R"=====(
 			bBottom = false;
 			bLeft = false;
 			bRight = false;
+			sendData();
 		});
 	}
 
