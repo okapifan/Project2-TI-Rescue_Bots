@@ -83,10 +83,46 @@ void HandleData()
 {
   // /data?id=___&w=___
   //byte valId = server.arg("id").toInt();
-  bool top = server.arg("top");
-  bool bottom = server.arg("bottom");
-  bool left = server.arg("left");
-  bool right = server.arg("right");
+
+  //pins for wheels
+  int leftForward = 14;
+  int leftBackward = 12;
+  int rightForward = 13;
+  int rightBackward = 15;
+
+  bool forward = server.arg("top"); //forward
+  bool backward = server.arg("bottom"); //backward
+  bool left = server.arg("left"); //go to left
+  bool right = server.arg("right"); //go to right
+
+  if (left) {
+    digitalWrite(HIGH, leftForward);
+    digitalWrite(LOW, leftBackward);
+    digitalWrite(LOW, rightForward);
+    digitalWrite(HIGH, rightBackward);
+  } else if (right) {
+    digitalWrite(LOW, leftForward);
+    digitalWrite(HIGH, leftBackward);
+    digitalWrite(HIGH, rightForward);
+    digitalWrite(LOW, rightBackward);
+  } else if (backward) {
+    digitalWrite(LOW, leftForward);
+    digitalWrite(HIGH, leftBackward);
+    digitalWrite(LOW, rightForward);
+    digitalWrite(HIGH, rightBackward);
+  } else if(forward) { 
+    digitalWrite(HIGH, leftForward);
+    digitalWrite(LOW, leftBackward);
+    digitalWrite(HIGH, rightForward);
+    digitalWrite(LOW, rightBackward);
+  } else {
+    //default
+    digitalWrite(LOW, leftForward);
+    digitalWrite(LOW, leftBackward);
+    digitalWrite(LOW, rightForward);
+    digitalWrite(LOW, rightBackward);
+  }
+  
 
   //TO Do use controll info
   if (valW > 0 && valW <= 10){
@@ -107,6 +143,6 @@ void HandleData()
     }
   }*/
 
-  String json = "{\"top\": " + top + ",\"bottom\":" + bottom + ",\"left\":" + left + ",\"right\":" + right +"}";
+  String json = "{\"top\": " + forward + ",\"bottom\":" + backward + ",\"left\":" + left + ",\"right\":" + right +"}";
   server.send(200, "text/json", json);
 }
