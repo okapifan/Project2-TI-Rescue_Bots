@@ -93,25 +93,25 @@ void HandleData()
   // /data?id=___&w=___
   //byte valId = server.arg("id").toInt();
 
+  
 
+  bool forward = server.arg("top").toInt(); //forward
+  bool backward = server.arg("bottom").toInt(); //backward
+  bool left = server.arg("left").toInt(); //go to left
+  bool right = server.arg("right").toInt(); //go to right
 
-  bool forward = server.arg("top"); //forward
-  bool backward = server.arg("bottom"); //backward
-  bool left = server.arg("left"); //go to left
-  bool right = server.arg("right"); //go to right
-
-   if (left) {
+   if (right) {
     digitalWrite(leftForward, HIGH);
     digitalWrite(leftBackward, LOW);
     digitalWrite(rightForward, LOW);
     digitalWrite(rightBackward, HIGH);
-    Serial.println("left");
-  } else if (right) {
+    Serial.println("right");
+  } else if (left) {
     digitalWrite(leftForward, LOW);
     digitalWrite(leftBackward, HIGH);
     digitalWrite(rightForward, HIGH);
     digitalWrite(rightBackward, LOW);
-    Serial.println("right");
+    Serial.println("left");
   } else if (backward) {
     digitalWrite(leftForward, LOW);
     digitalWrite(leftBackward, HIGH);
@@ -131,7 +131,7 @@ void HandleData()
     digitalWrite(rightForward, LOW);
     digitalWrite(rightBackward, LOW);
     Serial.println("default");
-    //automatichRijden();
+    //automatischRijden();
   }
   
 
