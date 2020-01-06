@@ -170,17 +170,39 @@ const char* page_Controler_Test PROGMEM = R"=====(
     //var url = new URL(url_string);
     //var id = url.searchParams.get("id");
     //console.log("Id: " + id);
+	var bTop = false;
+	var bBottom = false;
+	var bLeft = false;
+	var bRight = false;
 	
-	function ChangeData(){
-		var bTop = document.getElementsByClassName('left-top')[0].value;
-		var bBottom = document.getElementsByClassName('left-bottom')[0].value;
-		var bLeft = document.getElementsByClassName('right-left')[0].value;
-		var bRight = document.getElementsByClassName('right-right')[0].value;
-		SendData(bTop,bBottom,bLeft,bRight);
-	}
+	document.getElementsByClassName('left-top')[0].addEventListener("touchstart", function(){
+		bTop = true;
+		SendData();
+	});
+	
+	document.getElementsByClassName('left-bottom')[0].addEventListener("touchstart", function(){
+		bBottom = true;
+		SendData();
+	});
+	
+	document.getElementsByClassName('right-left')[0].addEventListener("touchstart", function(){
+		bLeft = true;
+		SendData();
+	});
+	
+	document.getElementsByClassName('right-right')[0].addEventListener("touchstart", function(){
+		bRight = true;
+		SendData();
+	});
 
-    function SendData(bTop,bBottom,bLeft,bRight) {
-      bTop? 1 : 0;
+	document.getElementsByClassName('button').addEventListener("touchend", function(){
+		bTop = false;
+		bBottom = false;
+		bLeft = false;
+		bRight = false;
+	});
+
+    function SendData() {
       console.log('Send: /data?top=' + (bTop? 1 : 0) + '&bottom=' + (bBottom? 1 : 0) + '&left=' + (bLeft? 1 : 0) + '&right=' + (bRight? 1 : 0));
       var xhttp = new XMLHttpRequest();
       xhttp.open('GET', '/data?top=' + (bTop? 1 : 0) + '&bottom=' + (bBottom? 1 : 0) + '&left=' + (bLeft? 1 : 0) + '&right=' + (bRight? 1 : 0) , true);
@@ -200,12 +222,12 @@ const char* page_Controler_Test PROGMEM = R"=====(
   </div>
   <div class="container">
 	<div class="left-section">
-		<button class="button left-top" onmousedown="ChangeData()"><strong>^</strong></button>
-		<button class="button left-bottom" onmousedown="ChangeData()"><strong>v</strong></button>
+		<button class="button left-top"><strong>^</strong></button>
+		<button class="button left-bottom"><strong>v</strong></button>
 	</div>
 	<div class="right-section">
-		<button class="button right-left" onmousedown="ChangeData()"><strong><</strong></button>
-		<button class="button right-right" onmousedown="ChangeData()"><strong>></strong></button>
+		<button class="button right-left"><strong><</strong></button>
+		<button class="button right-right"><strong>></strong></button>
 	</div>
   </div>
   <!--<div class='wrapper'>
