@@ -164,7 +164,33 @@ const char* page_Controler_Test PROGMEM = R"=====(
 		padding: 0;
 	}
   </style>
+    
+    <script>
+    //var url_string = window.location.href;
+    //var url = new URL(url_string);
+    //var id = url.searchParams.get("id");
+    //console.log("Id: " + id);
+	
+	function ChangeData(){
+		var bTop = document.getElementsByClassName('left-top')[0].value;
+		var bBottom = document.getElementsByClassName('left-bottom')[0].value;
+		var bLeft = document.getElementsByClassName('right-left')[0].value;
+		var bRight = document.getElementsByClassName('right-right')[0].value;
+		SendData(bTop,bBottom,bLeft,bRight);
+	}
+
+    function SendData(bTop,bBottom,bLeft,bRight) {
+      bTop? 1 : 0;
+      console.log('Send: /data?top=' + (bTop? 1 : 0) + '&bottom=' + (bBottom? 1 : 0) + '&left=' + (bLeft? 1 : 0) + '&right=' + (bRight? 1 : 0));
+      var xhttp = new XMLHttpRequest();
+      xhttp.open('GET', '/data?top=' + (bTop? 1 : 0) + '&bottom=' + (bBottom? 1 : 0) + '&left=' + (bLeft? 1 : 0) + '&right=' + (bRight? 1 : 0) , true);
+      xhttp.send();
+    }
+  </script>
+
 </head>
+
+
 
 <body>
   <div id="bg"></div>
@@ -190,27 +216,6 @@ const char* page_Controler_Test PROGMEM = R"=====(
       <p>White: <span id='textW'></span></p>
     </div>
   </div>-->
-  <script>
-    //var url_string = window.location.href;
-    //var url = new URL(url_string);
-    //var id = url.searchParams.get("id");
-    //console.log("Id: " + id);
-	
-	function ChangeData(){
-		var bTop = document.getElementByClass('left-top')[0].value;
-		var bBottom = document.getElementByClass('left-bottom')[0].value;
-		var bLeft = document.getElementByClass('right-left')[0].value;
-		var bRight = document.getElementByClass('right-right')[0].value;
-		SendData(bTop,bBottom,bLeft,bRight);
-	}
-
-    function SendData(bTop,bBottom,bLeft,bRight) {
-      console.log('Send: /data?top=' + bTop + 'bottom=' + bBottom + 'left=' + bLeft + 'right=' + bRight);
-      var xhttp = new XMLHttpRequest();
-      xhttp.open('GET', '/data?top=' + bTop + 'bottom=' + bBottom + 'left=' + bLeft + 'right=' + bRight , true);
-      xhttp.send();
-    }
-  </script>
 </body>
 
 </html>

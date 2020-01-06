@@ -22,10 +22,10 @@ ESP8266WebServer server(80);
 // IO
 const byte ledPin = LED_BUILTIN; // LED_BUILTIN
 //pins for wheels
-int leftForward = 0;
-int leftBackward = 1;
-int rightForward = 2;
-int rightBackward = 3;
+int leftForward = D0;
+int leftBackward = D1;
+int rightForward = D2;
+int rightBackward = D3;
 
 // Variables
 byte ledValue;
@@ -100,8 +100,6 @@ void HandleData()
   bool left = server.arg("left"); //go to left
   bool right = server.arg("right"); //go to right
 
-  forward = true;
-
    if (left) {
     digitalWrite(leftForward, HIGH);
     digitalWrite(leftBackward, LOW);
@@ -133,6 +131,7 @@ void HandleData()
     digitalWrite(rightForward, LOW);
     digitalWrite(rightBackward, LOW);
     Serial.println("default");
+    //automatichRijden();
   }
   
 
