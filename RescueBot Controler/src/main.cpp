@@ -12,7 +12,7 @@
 //#include <WiFiUdp.h>
 
 // Wifi settings
-const char *ssid = "esp8266";
+const char *ssid = "TI1D_4_RB1";
 const char *password = "123123123";
 ESP8266WebServer server(80);
 
@@ -29,12 +29,11 @@ int rightBackward = D3;
 
 // Variables
 byte ledValue;
+bool autoDrive = false;
 
 // Functions
 void HandleWebsite();
 void HandleData();
-
-
 
 void setup()
 {
@@ -44,7 +43,6 @@ void setup()
   pinMode(leftBackward, OUTPUT);
   pinMode(rightForward, OUTPUT);
   pinMode(rightBackward, OUTPUT);
-
 
   /*Serial.print("Connecting to ");
   Serial.println(ssid);
@@ -56,7 +54,6 @@ void setup()
 	}
   Serial.println("WiFi connected");*/
 
-
   Serial.print("Setting AP (Access Point)…");
   // Remove the password parameter, if you want the AP (Access Point) to be open
   WiFi.softAP(ssid, password);
@@ -64,7 +61,6 @@ void setup()
   IPAddress ip = WiFi.softAPIP();
   Serial.print("AP IP address: ");
   Serial.println(ip);
-
 
   server.on("/", HandleWebsite);
   server.on("/data", HandleData);
@@ -78,6 +74,11 @@ void setup()
 void loop()
 {
   server.handleClient();
+
+  if (autoDrive){
+    // Self drive code
+
+  }
 }
 
 void HandleWebsite()
@@ -90,50 +91,61 @@ void HandleWebsite()
 
 void HandleData()
 {
-  // /data?id=___&w=___
-  //byte valId = server.arg("id").toInt();
+  // /data?top=___&bottom=___&left=___&right=___
+  // /data?autodrive=___
 
-  
+  bool forward = server.arg("forward").toInt();     //forward
+  bool backward = server.arg("backward").toInt(); //backward
+  bool left = server.arg("left").toInt();       //go to left
+  bool right = server.arg("right").toInt();     //go to right
 
-  bool forward = server.arg("top").toInt(); //forward
-  bool backward = server.arg("bottom").toInt(); //backward
-  bool left = server.arg("left").toInt(); //go to left
-  bool right = server.arg("right").toInt(); //go to right
+  autoDrive = server.arg("autodrive").toInt();
 
-   if (right) {
-    digitalWrite(leftForward, HIGH);
-    digitalWrite(leftBackward, LOW);
-    digitalWrite(rightForward, LOW);
-    digitalWrite(rightBackward, HIGH);
-    Serial.println("right");
-  } else if (left) {
-    digitalWrite(leftForward, LOW);
-    digitalWrite(leftBackward, HIGH);
-    digitalWrite(rightForward, HIGH);
-    digitalWrite(rightBackward, LOW);
-    Serial.println("left");
-  } else if (backward) {
-    digitalWrite(leftForward, LOW);
-    digitalWrite(leftBackward, HIGH);
-    digitalWrite(rightForward, LOW);
-    digitalWrite(rightBackward, HIGH);
-    Serial.println("backward");
-  } else if(forward) { 
-    digitalWrite(leftForward, HIGH);
-    digitalWrite(leftBackward, LOW);
-    digitalWrite(rightForward, HIGH);
-    digitalWrite(rightBackward, LOW);
-    Serial.println("forward");
-  } else {
-    //default
-    digitalWrite(leftForward, LOW);
-    digitalWrite(leftBackward, LOW);
-    digitalWrite(rightForward, LOW);
-    digitalWrite(rightBackward, LOW);
-    Serial.println("default");
-    //automatischRijden();
+  if (!autoDrive)
+  {
+
+    if (forward)
+    {
+      digitalWrite(leftForward, HIGH);
+      digitalWrite(leftBackward, LOW);
+      digitalWrite(rightForward, HIGH);
+      digitalWrite(rightBackward, LOW);
+      Serial.println("Forward");
+    }
+    else if (backward)
+    {
+      digitalWrite(leftForward, LOW);
+      digitalWrite(leftBackward, HIGH);
+      digitalWrite(rightForward, LOW);
+      digitalWrite(rightBackward, HIGH);
+      Serial.println("Backward");
+    }
+    else if (left)
+    {
+      digitalWrite(leftForward, LOW);
+      digitalWrite(leftBackward, HIGH);
+      digitalWrite(rightForward, HIGH);
+      digitalWrite(rightBackward, LOW);
+      Serial.println("Left");
+    }
+    else if (right)
+    {
+      digitalWrite(leftForward, HIGH);
+      digitalWrite(leftBackward, LOW);
+      digitalWrite(rightForward, LOW);
+      digitalWrite(rightBackward, HIGH);
+      Serial.println("Right");
+    }
+    else
+    {
+      //default
+      digitalWrite(leftForward, LOW);
+      digitalWrite(leftBackward, LOW);
+      digitalWrite(rightForward, LOW);
+      digitalWrite(rightBackward, LOW);
+      Serial.println("default");
+    }
   }
-  
 
   /*//TO Do use controll info
   if (valW > 0 && valW <= 10){
@@ -154,6 +166,6 @@ void HandleData()
     }
   }*/
 
-  String json = "{\"top\": " + (String)forward + ",\"bottom\": " + (String)backward + ",\"left\": " + (String)left + ",\"right\": " + (String)right +"}";
+  String json = "{\"top\": " + (String)forward + ",\"bottom\": " + (String)backward + ",\"left\": " + (String)left + ",\"right\": " + (String)right + "}";
   server.send(200, "text/json", json);
 }
