@@ -21,11 +21,20 @@ ESP8266WebServer server(80);
 
 // IO
 const byte ledPin = LED_BUILTIN; // LED_BUILTIN
-//pins for wheels
+
+// Pins for wheels
 int leftForward = D0;
 int leftBackward = D1;
 int rightForward = D2;
 int rightBackward = D3;
+
+// Pins for ultrasoon sensor
+int trigPin; // Todo set pin
+int trigPin2; // Todo set pin
+int echoPin; // Todo set pin
+
+// Pins for ir sensor
+int ProxSensor; // Todo set pin
 
 // Variables
 byte ledValue;
@@ -34,15 +43,28 @@ bool autoDrive = false;
 // Functions
 void HandleWebsite();
 void HandleData();
+void getSensorsUpdate();
+long getDistance(int trigPin);
 
 void setup()
 {
   Serial.begin(115200);
-  pinMode(ledPin, OUTPUT);
+  pinMode(ledPin, OUTPUT); // Question: hebben we een LED nodig
+
+  //Movement
   pinMode(leftForward, OUTPUT);
   pinMode(leftBackward, OUTPUT);
   pinMode(rightForward, OUTPUT);
   pinMode(rightBackward, OUTPUT);
+
+  //Ultrasoon Sensor
+  pinMode (echoPin, INPUT);
+  pinMode (trigPin, OUTPUT);
+  pinMode (trigPin2, OUTPUT);
+
+  //IR-Sensor
+  pinMode(13, OUTPUT); // Todo Change pin 13
+  pinMode(ProxSensor,INPUT);
 
   /*Serial.print("Connecting to ");
   Serial.println(ssid);
@@ -77,7 +99,7 @@ void loop()
 
   if (autoDrive){
     // Self drive code
-
+    getUltrasoonUpdate();
   }
 }
 
@@ -168,4 +190,48 @@ void HandleData()
 
   String json = "{\"top\": " + (String)forward + ",\"bottom\": " + (String)backward + ",\"left\": " + (String)left + ",\"right\": " + (String)right + "}";
   server.send(200, "text/json", json);
+}
+
+void getSensorsUpdate(){
+  long distance;
+
+  distance = getDistance(trigPin);
+  delay(100);
+  distance2 = getDistance(trigPin2);
+  delay(100);
+  getIRReaction();
+  delay(100);
+}
+
+long getDistance(int trigPin){
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin,LOW);
+  long duration = pulseIn (echoPin, HIGH);
+
+  //This gives us distance in cm
+  long distance = duration/58.2;
+  Serial.print("Dit is de meting voor pin "+ trigPin +": ");
+  Serial.println (distance);
+
+  return distance;
+}
+
+int getIRReaction(){ //Todo fix this stupid name
+  int inputValue = 0;
+
+  // Check the sensor output
+  if(digitalRead(ProxSensor) == HIGH){
+    // Set the LED on
+    digitalWrite(13, HIGH); // Todo Change pin 13
+  }else{
+    // Set the LED off
+    digitalWrite(13, LOW); // Todo Change pin 13 
+  }
+  inputValue = digitalRead(ProxSensor);
+  Serial.println(inputValue);
+
+  return inputValue;
 }
