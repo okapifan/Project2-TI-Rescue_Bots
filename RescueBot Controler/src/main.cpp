@@ -1,8 +1,4 @@
 /*
-  Author: Daniël van der Drift
-
-  Project:
-  Ledstrip controler
 */
 
 // Libraries
@@ -29,12 +25,15 @@ int rightForward = D2;
 int rightBackward = D3;
 
 // Pins for ultrasoon sensor
-int trigPin; // Todo set pin
-int trigPin2; // Todo set pin
-int echoPin; // Todo set pin
+int trigPin = D5; // Todo set pin
+int trigPin2 = D6; // Todo set pin
+int trigPin3 = D7;
+int trigPin4 = D8;
+int echoPin = D4; // Todo set pin
 
 // Pins for ir sensor
 int ProxSensor; // Todo set pin
+int ProxSensor2;
 
 // Variables
 byte ledValue;
@@ -45,6 +44,8 @@ void HandleWebsite();
 void HandleData();
 void getSensorsUpdate();
 long getDistance(int trigPin);
+int getIRReaction(int s);
+
 
 void setup()
 {
@@ -61,10 +62,12 @@ void setup()
   pinMode (echoPin, INPUT);
   pinMode (trigPin, OUTPUT);
   pinMode (trigPin2, OUTPUT);
+  pinMode (trigPin3, OUTPUT);
+  pinMode (trigPin4, OUTPUT);
 
   //IR-Sensor
-  pinMode(13, OUTPUT); // Todo Change pin 13
   pinMode(ProxSensor,INPUT);
+  pinMode(ProxSensor2,INPUT);
 
   /*Serial.print("Connecting to ");
   Serial.println(ssid);
@@ -99,7 +102,7 @@ void loop()
 
   if (autoDrive){
     // Self drive code
-    getUltrasoonUpdate();
+    getSensorsUpdate();
   }
 }
 
@@ -193,14 +196,19 @@ void HandleData()
 }
 
 void getSensorsUpdate(){
-  long distance;
+  long us1;
+  long us2;
+  long us3;
+  long us4;
+  int ir1;
+  int ir2;
 
-  distance = getDistance(trigPin);
-  delay(100);
-  distance2 = getDistance(trigPin2);
-  delay(100);
-  getIRReaction();
-  delay(100);
+  //us1 = getDistance(trigPin);
+  us2 = getDistance(trigPin2);
+  us3 = getDistance(trigPin3);
+  us4 = getDistance(trigPin4);
+  //ir1 = getIRReaction(ProxSensor);
+  //ir2 = getIRReaction(ProxSensor2);
 }
 
 long getDistance(int trigPin){
@@ -213,25 +221,12 @@ long getDistance(int trigPin){
 
   //This gives us distance in cm
   long distance = duration/58.2;
-  Serial.print("Dit is de meting voor pin "+ trigPin +": ");
-  Serial.println (distance);
+  Serial.println(distance);
 
   return distance;
 }
 
-int getIRReaction(){ //Todo fix this stupid name
-  int inputValue = 0;
-
-  // Check the sensor output
-  if(digitalRead(ProxSensor) == HIGH){
-    // Set the LED on
-    digitalWrite(13, HIGH); // Todo Change pin 13
-  }else{
-    // Set the LED off
-    digitalWrite(13, LOW); // Todo Change pin 13 
-  }
-  inputValue = digitalRead(ProxSensor);
-  Serial.println(inputValue);
-
+int getIRReaction(int s){ //Todo fix this stupid name
+  int inputValue = digitalRead(s);
   return inputValue;
 }
