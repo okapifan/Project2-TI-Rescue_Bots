@@ -46,9 +46,15 @@ bool right = false;
 // Functions
 void HandleWebsite();
 void HandleData();
-void getSensorsUpdate();
+void fullAuto();
 long getDistance(int trigPin);
 int getIRReaction(int s);
+void driveforward();
+void drivebackward();
+void driveleft();
+void driveright();
+void idle();
+bool checkObject(int distance);
 
 
 void setup()
@@ -106,7 +112,7 @@ void loop()
 
   if (autoDrive){
     // Self drive code
-    getSensorsUpdate();
+    fullAuto();
   }
 }
 
@@ -136,48 +142,11 @@ void HandleData()
 
   if (!autoDrive)
   {
-
-    if (forward)
-    {
-      digitalWrite(leftForward, HIGH);
-      digitalWrite(leftBackward, LOW);
-      digitalWrite(rightForward, HIGH);
-      digitalWrite(rightBackward, LOW);
-      Serial.println("Forward");
-    }
-    else if (backward)
-    {
-      digitalWrite(leftForward, LOW);
-      digitalWrite(leftBackward, HIGH);
-      digitalWrite(rightForward, LOW);
-      digitalWrite(rightBackward, HIGH);
-      Serial.println("Backward");
-    }
-    else if (left)
-    {
-      digitalWrite(leftForward, LOW);
-      digitalWrite(leftBackward, HIGH);
-      digitalWrite(rightForward, HIGH);
-      digitalWrite(rightBackward, LOW);
-      Serial.println("Left");
-    }
-    else if (right)
-    {
-      digitalWrite(leftForward, HIGH);
-      digitalWrite(leftBackward, LOW);
-      digitalWrite(rightForward, LOW);
-      digitalWrite(rightBackward, HIGH);
-      Serial.println("Right");
-    }
-    else
-    {
-      //default
-      digitalWrite(leftForward, LOW);
-      digitalWrite(leftBackward, LOW);
-      digitalWrite(rightForward, LOW);
-      digitalWrite(rightBackward, LOW);
-      Serial.println("default");
-    }
+    if (forward) {driveforward();}
+    else if (backward) {drivebackward();}
+    else if (left) {driveleft();}
+    else if (right) {driveright();}
+    else {idle();}
   }
   else{
     forward = backward = left = right = false;
@@ -206,27 +175,28 @@ void HandleData()
   server.send(200, "text/json", json);
 }
 
-void getSensorsUpdate(){
-  long us1 = 0;
-  long us2 = 0;
-  long us3 = 0;
-  long us4 = 0;
-  int ir1 = 0;
-  int ir2 = 0;
+void fullAuto(){
+  bool us1;
+  bool us2;
+  bool us3;
+  bool us4;
+  bool ir1;
+  bool ir2;
 
-  //us1 = getDistance(trigPin);
-  us2 = getDistance(trigPin2);
-  us3 = getDistance(trigPin3);
-  us4 = getDistance(trigPin4);
-  //ir1 = getIRReaction(ProxSensor);
-  //ir2 = getIRReaction(ProxSensor2);
-  Serial.print(us1);
-  Serial.print(", ");
-  Serial.print(us2);
-  Serial.print(", ");
-  Serial.print(us3);
-  Serial.print(", ");
-  Serial.println(us4);
+  us1 = checkObject(getDistance(trigPin));
+  us2 = checkObject(getDistance(trigPin2));
+  us3 = checkObject(getDistance(trigPin3));
+  us4 = checkObject(getDistance(trigPin4));
+  ir1 = checkObject(getIRReaction(ProxSensor));
+  ir2 = checkObject(getIRReaction(ProxSensor2));
+
+  
+  if(us4) {driveleft();}
+  else if (us2 || us3) {drivebackward();} 
+  else {driveforward();}
+  
+
+
  }
 
 long getDistance(int trigPin){
@@ -237,7 +207,7 @@ long getDistance(int trigPin){
   digitalWrite(trigPin,LOW);
   long duration = pulseIn(echoPin, HIGH);
 
-  //This gives us distance in cm
+  //This gives us distance in cm (5-35 cm)
   long distance = duration/58.2;
 
   return distance;
@@ -246,4 +216,49 @@ long getDistance(int trigPin){
 int getIRReaction(int s){ //Todo fix this stupid name
   int inputValue = digitalRead(s);
   return inputValue;
+}
+
+void driveforward() {
+  digitalWrite(leftForward, HIGH);
+  digitalWrite(leftBackward, LOW);
+  digitalWrite(rightForward, HIGH);
+  digitalWrite(rightBackward, LOW);
+  Serial.println("Forward");
+}
+
+void drivebackward() {
+  digitalWrite(leftForward, LOW);
+  digitalWrite(leftBackward, HIGH);
+  digitalWrite(rightForward, LOW);
+  digitalWrite(rightBackward, HIGH);
+  Serial.println("Forward");
+}
+
+void driveleft() {
+  digitalWrite(leftForward, HIGH);
+  digitalWrite(leftBackward, LOW);
+  digitalWrite(rightForward, LOW);
+  digitalWrite(rightBackward, HIGH);
+  Serial.println("Forward");
+}
+
+void driveright() {
+  digitalWrite(leftForward, LOW);
+  digitalWrite(leftBackward, HIGH);
+  digitalWrite(rightForward, HIGH);
+  digitalWrite(rightBackward, LOW);
+  Serial.println("Forward");
+}
+
+void idle() {
+  digitalWrite(leftForward, LOW);
+  digitalWrite(leftBackward, LOW);
+  digitalWrite(rightForward, LOW);
+  digitalWrite(rightBackward, LOW);
+  Serial.println("Forward");
+}
+
+bool checkObject(int distance) {
+  if((distance > 0 && distance < 15) || distance > 1050) {return true;}
+  else {return false;}
 }
