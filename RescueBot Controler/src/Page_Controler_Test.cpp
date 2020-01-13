@@ -294,7 +294,7 @@ const char* page_Controler_Test PROGMEM = R"=====(
 		});
 
 		buttonBackward.addEventListener("touchstart", function () {
-			bBottom = true;
+			bBackward = true;
 			SendData();
 		});
 
@@ -311,8 +311,8 @@ const char* page_Controler_Test PROGMEM = R"=====(
 		var buttons = document.getElementsByClassName('button')
 		for (var i = 0; i < buttons.length; i++) {
 			buttons[i].addEventListener("touchend", function () {
-				bTop = false;
-				bBottom = false;
+				bForward = false;
+				bBackward = false;
 				bLeft = false;
 				bRight = false;
 				SendData();
