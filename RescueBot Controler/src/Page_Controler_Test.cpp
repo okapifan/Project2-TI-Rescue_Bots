@@ -125,12 +125,12 @@ const char* page_Controler_Test PROGMEM = R"=====(
 			left: 20vw;
 		}
 
-		.left-top {
+		.forward {
 			position: fixed;
 			top: 15vh;
 		}
 
-		.left-bottom {
+		.backward {
 			position: fixed;
 			bottom: 15vh;
 		}
@@ -141,12 +141,12 @@ const char* page_Controler_Test PROGMEM = R"=====(
 			top: 35vh;
 		}
 
-		.right-left {
+		.left {
 			position: fixed;
 			right: 40vw;
 		}
 
-		.right-right {
+		.right {
 			position: fixed;
 			right: 20vw;
 		}
@@ -294,7 +294,7 @@ const char* page_Controler_Test PROGMEM = R"=====(
 		});
 
 		buttonBackward.addEventListener("touchstart", function () {
-			bBackward = true;
+			bBottom = true;
 			SendData();
 		});
 
@@ -311,8 +311,8 @@ const char* page_Controler_Test PROGMEM = R"=====(
 		var buttons = document.getElementsByClassName('button')
 		for (var i = 0; i < buttons.length; i++) {
 			buttons[i].addEventListener("touchend", function () {
-				bForward = false;
-				bBackward = false;
+				bTop = false;
+				bBottom = false;
 				bLeft = false;
 				bRight = false;
 				SendData();
@@ -327,16 +327,16 @@ const char* page_Controler_Test PROGMEM = R"=====(
 		});
 
 		function SendData() {
-			console.log('Send: /data?forward=' + (bForward ? 1 : 0) + '&backward=' + (bBackward ? 1 : 0) + '&left=' + (bLeft ? 1 : 0) + '&right=' + (bRight ? 1 : 0));
+			console.log('Send: /data?forward=' + (bForward ? 2 : 1) + '&backward=' + (bBackward ? 2 : 1) + '&left=' + (bLeft ? 2 : 1) + '&right=' + (bRight ? 2 : 1));
 			var xhttp = new XMLHttpRequest();
-			xhttp.open('GET', '/data?forward=' + (bForward ? 1 : 0) + '&backward=' + (bBackward ? 1 : 0) + '&left=' + (bLeft ? 1 : 0) + '&right=' + (bRight ? 1 : 0), true);
+			xhttp.open('GET', '/data?forward=' + (bForward ? 2 : 1) + '&backward=' + (bBackward ? 2 : 1) + '&left=' + (bLeft ? 2 : 1) + '&right=' + (bRight ? 2 : 1), true);
 			xhttp.send();
 		}
 
 		function SendData2() {
-			console.log('Send: /data?autodrive=' + (autoDrive ? 1 : 0));
+			console.log('Send: /data?autodrive=' + (autoDrive ? 2 : 1));
 			var xhttp = new XMLHttpRequest();
-			xhttp.open('GET', '/data?autodrive=' + (autoDrive ? 1 : 0), true);
+			xhttp.open('GET', '/data?autodrive=' + (autoDrive ? 2 : 1), true);
 			xhttp.send();
 		}
 	</script>
