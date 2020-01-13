@@ -196,20 +196,27 @@ void HandleData()
 }
 
 void getSensorsUpdate(){
-  long us1;
-  long us2;
-  long us3;
-  long us4;
-  int ir1;
-  int ir2;
+  long us1 = 0;
+  long us2 = 0;
+  long us3 = 0;
+  long us4 = 0;
+  int ir1 = 0;
+  int ir2 = 0;
 
   //us1 = getDistance(trigPin);
-  //us2 = getDistance(trigPin2);
-  //us3 = getDistance(trigPin3);
+  us2 = getDistance(trigPin2);
+  us3 = getDistance(trigPin3);
   us4 = getDistance(trigPin4);
   //ir1 = getIRReaction(ProxSensor);
   //ir2 = getIRReaction(ProxSensor2);
-}
+  Serial.print(us1);
+  Serial.print(", ");
+  Serial.print(us2);
+  Serial.print(", ");
+  Serial.print(us3);
+  Serial.print(", ");
+  Serial.println(us4);
+ }
 
 long getDistance(int trigPin){
   digitalWrite(trigPin, LOW);
@@ -221,7 +228,6 @@ long getDistance(int trigPin){
 
   //This gives us distance in cm
   long distance = duration/58.2;
-  Serial.println(distance);
 
   return distance;
 }
