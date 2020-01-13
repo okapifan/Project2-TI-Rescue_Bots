@@ -284,29 +284,26 @@
 		var checkboxAutodrive = document.getElementsByClassName('autodrive')[0];
 
 
-		buttonForward.addEventListener("touchstart", function () {
-			bForward = true;
-			SendData();
-		});
+		buttonForward.addEventListener("touchstart", function () { bForward = true; SendData(); });
+		buttonBackward.addEventListener("touchstart", function () { bBackward = true; SendData(); });
+		buttonLeft.addEventListener("touchstart", function () { bLeft = true; SendData(); });
+		buttonRight.addEventListener("touchstart", function () { bRight = true; SendData(); });
 
-		buttonBackward.addEventListener("touchstart", function () {
-			bBackward = true;
-			SendData();
-		});
-
-		buttonLeft.addEventListener("touchstart", function () {
-			bLeft = true;
-			SendData();
-		});
-
-		buttonRight.addEventListener("touchstart", function () {
-			bRight = true;
-			SendData();
-		});
+		buttonForward.addEventListener("mousedown", function () { bForward = true; SendData(); });
+		buttonBackward.addEventListener("mousedown", function () { bBackward = true; SendData(); });
+		buttonLeft.addEventListener("mousedown", function () { bLeft = true; SendData(); });
+		buttonRight.addEventListener("mousedown", function () { bRight = true; SendData(); });
 
 		var buttons = document.getElementsByClassName('button')
 		for (var i = 0; i < buttons.length; i++) {
 			buttons[i].addEventListener("touchend", function () {
+				bForward = false;
+				bBackward = false;
+				bLeft = false;
+				bRight = false;
+				SendData();
+			});
+			buttons[i].addEventListener("mouseup", function () {
 				bForward = false;
 				bBackward = false;
 				bLeft = false;
