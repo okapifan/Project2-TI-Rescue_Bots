@@ -22,10 +22,10 @@ const byte ledPin = LED_BUILTIN; // LED_BUILTIN
 int leftForward = D0;
 int leftBackward = D1;
 int rightForward = D2;
-int rightBackward = D3;
+int rightBackward = D5;
 
 // Pins for ultrasoon sensor
-int trigPin = D5; // Todo set pin
+int trigPin = D3; // Todo set pin
 int trigPin2 = D6; // Todo set pin
 int trigPin3 = D7;
 int trigPin4 = D8;
@@ -204,8 +204,8 @@ void getSensorsUpdate(){
   int ir2;
 
   //us1 = getDistance(trigPin);
-  us2 = getDistance(trigPin2);
-  us3 = getDistance(trigPin3);
+  //us2 = getDistance(trigPin2);
+  //us3 = getDistance(trigPin3);
   us4 = getDistance(trigPin4);
   //ir1 = getIRReaction(ProxSensor);
   //ir2 = getIRReaction(ProxSensor2);
@@ -217,7 +217,7 @@ long getDistance(int trigPin){
   digitalWrite(trigPin, HIGH);
   delayMicroseconds(10);
   digitalWrite(trigPin,LOW);
-  long duration = pulseIn (echoPin, HIGH);
+  long duration = pulseIn(echoPin, HIGH);
 
   //This gives us distance in cm
   long distance = duration/58.2;
