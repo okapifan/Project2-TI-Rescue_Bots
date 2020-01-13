@@ -38,6 +38,10 @@ int ProxSensor2;
 // Variables
 byte ledValue;
 bool autoDrive = false;
+bool forward = false;
+bool backward = false;
+bool left = false;
+bool right = false;
 
 // Functions
 void HandleWebsite();
@@ -116,15 +120,19 @@ void HandleWebsite()
 
 void HandleData()
 {
-  // /data?top=___&bottom=___&left=___&right=___
+  // /data?forward=___&backward=___&left=___&right=___
   // /data?autodrive=___
 
-  bool forward = server.arg("forward").toInt();     //forward
-  bool backward = server.arg("backward").toInt(); //backward
-  bool left = server.arg("left").toInt();       //go to left
-  bool right = server.arg("right").toInt();     //go to right
+  if (server.arg("forward").toInt() > 0) {
+    forward = server.arg("forward").toInt() - 1; //forward
+    backward = server.arg("backward").toInt() - 1; //backward
+    left = server.arg("left").toInt() - 1; //go to left
+    right = server.arg("right").toInt() - 1; //go to right
+  }
 
-  autoDrive = server.arg("autodrive").toInt();
+  if (server.arg("autodrive").toInt() > 0) {
+    autoDrive = server.arg("autodrive").toInt() - 1;
+  }
 
   if (!autoDrive)
   {
@@ -170,6 +178,9 @@ void HandleData()
       digitalWrite(rightBackward, LOW);
       Serial.println("default");
     }
+  }
+  else{
+    forward = backward = left = right = false;
   }
 
   /*//TO Do use controll info
