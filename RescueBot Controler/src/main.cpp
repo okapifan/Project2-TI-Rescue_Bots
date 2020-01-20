@@ -176,25 +176,25 @@ void HandleData()
 }
 
 void fullAuto(){
-  bool us1;
-  bool us2;
-  bool us3;
-  bool us4;
-  bool ir1;
-  bool ir2;
+  bool usLinks;
+  bool usVoorLinks;
+  bool usVoorRechts;
+  bool usRechts;
+  bool irLinks;
+  bool irRechts;
 
-  us1 = checkObject(getDistance(trigPin));
-  us2 = checkObject(getDistance(trigPin2));
-  us3 = checkObject(getDistance(trigPin3));
-  us4 = checkObject(getDistance(trigPin4));
-  ir1 = checkObject(getIRReaction(ProxSensor));
-  ir2 = checkObject(getIRReaction(ProxSensor2));
+  usLinks = checkObject(getDistance(trigPin));
+  usVoorLinks = checkObject(getDistance(trigPin2));
+  usVoorRechts = checkObject(getDistance(trigPin3));
+  usRechts = checkObject(getDistance(trigPin4));
+  irLinks = checkObject(getIRReaction(ProxSensor));
+  irRechts = checkObject(getIRReaction(ProxSensor2));
 
   
-  if(us4) {driveleft();}
-  else if (us2 || us3) {drivebackward();} 
-  else if (ir1) {rotate("left");}
-  else if (ir2) {rotate("right");}
+  if(usRechts) {driveleft();}
+  else if (usVoorLinks || usVoorRechts) {drivebackward();} 
+  else if (irLinks) {rotate("left");}
+  else if (irRechts) {rotate("right");}
   else {driveforward();}
   
 
