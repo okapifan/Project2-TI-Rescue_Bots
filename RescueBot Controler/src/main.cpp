@@ -48,7 +48,7 @@ void HandleWebsite();
 void HandleData();
 void fullAuto();
 long getDistance(int trigPin);
-int getIRReaction(int s);
+int readIr(int s);
 void driveforward();
 void drivebackward();
 void driveleft();
@@ -118,7 +118,7 @@ void loop()
 
 void HandleWebsite()
 {
-  // /
+  //
 
   String html = String(page_Controler_Test);
   server.send(200, "text/html", html);
@@ -152,25 +152,6 @@ void HandleData()
     forward = backward = left = right = false;
   }
 
-  /*//TO Do use controll info
-  if (valW > 0 && valW <= 10){
-    ledValue = valW;
-    analogWrite(ledPin, map(valW, 1, 10, 0, 1023));
-  }*/
-
-  /*if (valId > 0)
-  {
-    switch (valId)
-    {
-    case 1:
-      break;
-    case 2:
-      break;
-    case 3:
-      break;
-    }
-  }*/
-
   String json = "{\"top\": " + (String)forward + ",\"bottom\": " + (String)backward + ",\"left\": " + (String)left + ",\"right\": " + (String)right + "}";
   server.send(200, "text/json", json);
 }
@@ -187,8 +168,8 @@ void fullAuto(){
   usVoorLinks = checkObject(getDistance(trigPin2));
   usVoorRechts = checkObject(getDistance(trigPin3));
   usRechts = checkObject(getDistance(trigPin4));
-  irLinks = checkObject(getIRReaction(ProxSensor));
-  irRechts = checkObject(getIRReaction(ProxSensor2));
+  irLinks = checkObject(readIr(ProxSensor));
+  irRechts = checkObject(readIr(ProxSensor2));
 
   
   if(usRechts) {driveleft();}
@@ -215,7 +196,7 @@ long getDistance(int trigPin){
   return distance;
 }
 
-int getIRReaction(int s){ //Todo fix this stupid name
+int readIr(int s){ //Todo fix this stupid name
   int inputValue = digitalRead(s);
   return inputValue;
 }
