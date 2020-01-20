@@ -8,7 +8,7 @@
 //#include <WiFiUdp.h>
 
 // Wifi settings
-const char *ssid = "TI1D_4_RB1";
+const char *ssid = "TI1D_4_RB2";
 const char *password = "123123123";
 ESP8266WebServer server(80);
 
@@ -19,21 +19,10 @@ ESP8266WebServer server(80);
 const byte ledPin = LED_BUILTIN; // LED_BUILTIN
 
 // Pins for wheels
-int leftForward = D0;
-int leftBackward = D1;
-int rightForward = D2;
-int rightBackward = D5;
-
-// Pins for ultrasoon sensor
-int trigPin = D3; // Todo set pin
-int trigPin2 = D6; //voorLinks
-int trigPin3 = D7; //voorRechts
-int trigPin4 = D8; //rechts
-int echoPin = D4; // Todo set pin
-
-// Pins for ir sensor
-int ProxSensor = D9; // Todo set pin
-int ProxSensor2 = D10;
+int leftForward = D1;
+int leftBackward = D0;
+int rightForward = D5;
+int rightBackward = D2;
 
 // Variables
 byte ledValue;
@@ -43,28 +32,16 @@ bool backward = false;
 bool left = false;
 bool right = false;
 
-//sensors
-bool usLinks;
-bool usVoorLinks;
-bool usVoorRechts;
-bool usRechts;
-bool irLinks;
-bool irRechts;
+
 
 // Functions
 void HandleWebsite();
 void HandleData();
-void HandleDebug();
-void fullAuto();
-long getDistance(int trigPin);
-int readIr(int s);
 void driveforward();
 void drivebackward();
 void driveleft();
 void driveright();
 void idle();
-void rotate(String leftOrRight);
-bool checkObject(int distance);
 
 
 void setup()
@@ -78,16 +55,6 @@ void setup()
   pinMode(rightForward, OUTPUT);
   pinMode(rightBackward, OUTPUT);
 
-  //Ultrasoon Sensor
-  pinMode (echoPin, INPUT);
-  pinMode (trigPin, OUTPUT);
-  pinMode (trigPin2, OUTPUT);
-  pinMode (trigPin3, OUTPUT);
-  pinMode (trigPin4, OUTPUT);
-
-  //IR-Sensor
-  pinMode(ProxSensor,INPUT);
-  pinMode(ProxSensor2,INPUT);
 
   /*Serial.print("Connecting to ");
   Serial.println(ssid);
@@ -109,7 +76,6 @@ void setup()
 
   server.on("/", HandleWebsite);
   server.on("/data", HandleData);
-  server.on("/debug", HandleDebug);
   server.begin();
 
   Serial.println("Server started");
@@ -120,11 +86,6 @@ void setup()
 void loop()
 {
   server.handleClient();
-
-  if (autoDrive){
-    // Self drive code
-    fullAuto();
-  }
 }
 
 void HandleWebsite()
@@ -151,72 +112,15 @@ void HandleData()
     autoDrive = server.arg("autodrive").toInt() - 1;
   }
 
-  if (!autoDrive)
-  {
+  
     if (forward) {driveforward();}
     else if (backward) {drivebackward();}
     else if (left) {driveleft();}
     else if (right) {driveright();}
     else {idle();}
-  }
-  else{
-    forward = backward = left = right = false;
-  }
 
   String json = "{\"top\": " + (String)forward + ",\"bottom\": " + (String)backward + ",\"left\": " + (String)left + ",\"right\": " + (String)right + "}";
   server.send(200, "text/json", json);
-}
-
-void HandleDebug()
-{
-  // /debug
-  
-  String text = "U Links: " + (String)usLinks + 
-  "\nU VoorLinks: " + (String)usVoorLinks + 
-  "\nU VoorRechts: " + (String)usVoorRechts + 
-  "\nURechts: " + (String)usRechts + 
-  "\nIR Links: " + (String)irLinks + 
-  "\nIR Rechts: " + (String)irRechts + "\n";
-  server.send(200, "text", text);
-}
-
-void fullAuto(){
-
-
-  usLinks = checkObject(getDistance(trigPin));
-  usVoorLinks = checkObject(getDistance(trigPin2));
-  usVoorRechts = checkObject(getDistance(trigPin3));
-  usRechts = checkObject(getDistance(trigPin4));
-  irRechts = checkObject(readIr(ProxSensor));
-  irLinks = checkObject(readIr(ProxSensor2));
-
-  
-  if (usLinks) {driveright();}
-  else if (usRechts || irRechts) {driveleft();}
-  else if (usVoorLinks || usVoorRechts) {drivebackward();} 
-  else {driveforward();}
-  
-
-
- }
-
-long getDistance(int trigPin){
-  digitalWrite(trigPin, LOW);
-  delayMicroseconds(2);
-  digitalWrite(trigPin, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(trigPin,LOW);
-  long duration = pulseIn(echoPin, HIGH);
-
-  //This gives us distance in cm (5-35 cm)
-  long distance = duration/58.2;
-  Serial.println(trigPin + ": " + distance);
-  return distance;
-}
-
-int readIr(int s){ //Todo fix this stupid name
-  int inputValue = digitalRead(s);
-  return inputValue;
 }
 
 void driveforward() {
@@ -257,21 +161,4 @@ void idle() {
   digitalWrite(rightForward, LOW);
   digitalWrite(rightBackward, LOW);
   Serial.println("Idle");
-}
-
-// Rotates 45 degrees
-// void rotate(String leftOrRight){
-//   drivebackward();
-//   delay(500); //Todo
-//   if(leftOrRight = "left"){
-//     driveleft();
-//   } else if (leftOrRight = "right"){
-//     driveright();
-//   }
-//   delay(500);
-// }
-
-bool checkObject(int distance) {
-  if((distance > 0 && distance < 20)/* || distance > 1050*/) {return true;}
-  else {return false;}
 }
