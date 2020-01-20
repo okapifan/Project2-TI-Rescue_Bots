@@ -32,8 +32,8 @@ int trigPin4 = D8;
 int echoPin = D4; // Todo set pin
 
 // Pins for ir sensor
-int ProxSensor; // Todo set pin
-int ProxSensor2;
+int ProxSensor = D9; // Todo set pin
+int ProxSensor2 = D10;
 
 // Variables
 byte ledValue;
@@ -193,6 +193,8 @@ void fullAuto(){
   
   if(us4) {driveleft();}
   else if (us2 || us3) {drivebackward();} 
+  else if (ir1) {rotate("left");}
+  else if (ir2) {rotate("right");}
   else {driveforward();}
   
 
@@ -256,6 +258,18 @@ void idle() {
   digitalWrite(rightForward, LOW);
   digitalWrite(rightBackward, LOW);
   Serial.println("Forward");
+}
+
+// Rotates 45 degrees
+void rotate(string leftOrRight){
+  drivebackward();
+  delay(500); //Todo
+  if(leftOrRight = "left"){
+    driveleft();
+  } else if (leftOrRight = "right"){
+    driveright();
+  }
+  delay(500); //Todo
 }
 
 bool checkObject(int distance) {
