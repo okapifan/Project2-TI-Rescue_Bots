@@ -128,7 +128,6 @@ void driveforward() {
   digitalWrite(leftBackward, LOW);
   digitalWrite(rightForward, HIGH);
   digitalWrite(rightBackward, LOW);
-  Serial.println("Forward");
 }
 
 void drivebackward() {
@@ -136,7 +135,6 @@ void drivebackward() {
   digitalWrite(leftBackward, HIGH);
   digitalWrite(rightForward, LOW);
   digitalWrite(rightBackward, HIGH);
-  Serial.println("Backward");
 }
 
 void driveleft() {
@@ -144,7 +142,6 @@ void driveleft() {
   digitalWrite(leftBackward, LOW);
   digitalWrite(rightForward, LOW);
   digitalWrite(rightBackward, HIGH);
-  Serial.println("Left");
 }
 
 void driveright() {
@@ -152,7 +149,6 @@ void driveright() {
   digitalWrite(leftBackward, HIGH);
   digitalWrite(rightForward, HIGH);
   digitalWrite(rightBackward, LOW);
-  Serial.println("Right");
 }
 
 void idle() {
@@ -160,5 +156,4 @@ void idle() {
   digitalWrite(leftBackward, LOW);
   digitalWrite(rightForward, LOW);
   digitalWrite(rightBackward, LOW);
-  Serial.println("Idle");
 }
