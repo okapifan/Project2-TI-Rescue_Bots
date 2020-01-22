@@ -35,6 +35,10 @@ int echoPin = D4; // Todo set pin
 int ProxSensor = D9; // Todo set pin
 int ProxSensor2 = D10;
 
+// Pins for reed sensors
+int ReedSensor = A0;
+
+
 // Variables
 byte ledValue;
 bool autoDrive = false;
@@ -50,6 +54,7 @@ bool usVoorRechts;
 bool usRechts;
 bool irLinks;
 bool irRechts;
+bool reedVoor;
 
 // Functions
 void HandleWebsite();
@@ -58,6 +63,7 @@ void HandleDebug();
 void fullAuto();
 long getDistance(int trigPin);
 int readIr(int s);
+int readReed();
 void driveforward();
 void drivebackward();
 void driveleft();
@@ -88,6 +94,9 @@ void setup()
   //IR-Sensor
   pinMode(ProxSensor,INPUT);
   pinMode(ProxSensor2,INPUT);
+
+  //Reed-Sensor
+  pinMode(ReedSensor,INPUT);
 
   /*Serial.print("Connecting to ");
   Serial.println(ssid);
@@ -176,7 +185,8 @@ void HandleDebug()
   "\nU VoorRechts: " + (String)usVoorRechts + 
   "\nURechts: " + (String)usRechts + 
   "\nIR Links: " + (String)irLinks + 
-  "\nIR Rechts: " + (String)irRechts + "\n";
+  "\nIR Rechts: " + (String)irRechts +
+  "\nReed: " + (String)reedVoor + "\n";
   server.send(200, "text", text);
 }
 
@@ -189,15 +199,19 @@ void fullAuto(){
   usRechts = checkObject(getDistance(trigPin4));
   irRechts = checkObject(readIr(ProxSensor));
   irLinks = checkObject(readIr(ProxSensor2));
+  reedVoor = digitalRead(ReedSensor);
 
-  
-  if (usLinks) {driveright();}
-  else if (usRechts || irRechts) {driveleft();}
-  else if (usVoorLinks || usVoorRechts) {drivebackward();} 
-  else {driveforward();}
-  
+  //check of er slachtoffer ligt , zo ja wacht
+  //check of naar voren rijden kan, zo ja rijd naar voren
+  //check of je naar links kan, zo ja rijd naar links
+  //check of je naar rechts kan, zo ja rijd naar rechts
+  //niks mogelijk rijd naar achteren
 
-
+  if(reedVoor){delay(1500);}
+  else if (!(usVoorLinks || usVoorRechts)) {driveforward();} 
+  else if (!(usLinks || irLinks)) {driveleft();}
+  else if (!(usRechts || irRechts)) {driveright();}
+  else {drivebackward();}
  }
 
 long getDistance(int trigPin){
