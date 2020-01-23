@@ -231,15 +231,15 @@ void selfDrive(){
   }
   else if (usLinks || irLinks) { // Check of er een obstakel links ligt
     driveBackward();
-    delay(600);
-    driveRight();
     delay(400);
+    driveRight();
+    delay(600);
   }
   else if (usRechts || irRechts) { // Check of er een obstakel rechts ligt
     driveBackward();
-    delay(600);
-    driveLeft();
     delay(400);
+    driveLeft();
+    delay(600);
   }
   else { // Niets aan de hand
     driveForward();
