@@ -1,3 +1,7 @@
+// Test analog pin on ESP
+// Conclusion: digitalRead always returns 0
+// 		Use analogRead and calculate the digital value
+
 const int ReedPin = A0;
 
 void setup() 
