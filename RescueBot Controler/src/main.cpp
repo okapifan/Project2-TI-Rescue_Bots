@@ -63,7 +63,7 @@ void HandleDebug();
 void fullAuto();
 long getDistance(int trigPin);
 int readIr(int s);
-int readReed();
+bool readReed(int s);
 void driveforward();
 void drivebackward();
 void driveleft();
@@ -199,7 +199,7 @@ void fullAuto(){
   usRechts = checkObject(getDistance(trigPin4));
   irRechts = checkObject(readIr(ProxSensor));
   irLinks = checkObject(readIr(ProxSensor2));
-  reedVoor = digitalRead(ReedSensor);
+  reedVoor = readReed(ReedSensor);
 
   //check of er slachtoffer ligt , zo ja wacht
   //check of naar voren rijden kan, zo ja rijd naar voren
@@ -230,6 +230,12 @@ long getDistance(int trigPin){
 
 int readIr(int s){ //Todo fix this stupid name
   int inputValue = digitalRead(s);
+  return inputValue;
+}
+
+bool readReed(int s){ //Todo fix this stupid name
+  int inputValue1 = analogRead(s);
+  bool inputValue = (inputValue1 < 512);
   return inputValue;
 }
 
