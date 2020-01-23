@@ -24,28 +24,27 @@ ESP8266WebServer server(80);
 #include "Page_Controller.h"
 
 // Pins for wheels
-int leftForwardPin = D0;
-int leftBackwardPin = D1;
-int rightForwardPin = D2;
-int rightBackwardPin = D5;
+const int leftForwardPin = D0;
+const int leftBackwardPin = D1;
+const int rightForwardPin = D2;
+const int rightBackwardPin = D5;
 
 // Pins for ultrasoon sensor
-int trigPin1 = D3; // Links
-int trigPin2 = D6; // VoorLinks
-int trigPin3 = D7; // VoorRechts
-int trigPin4 = D8; // Rechts
-int echoPin = D4;
+const int trigPin1 = D3; // Links
+const int trigPin2 = D6; // VoorLinks
+const int trigPin3 = D7; // VoorRechts
+const int trigPin4 = D8; // Rechts
+const int echoPin = D4;
 
 // Pins for ir sensor
-int IRPin1 = D9;
-int IRPin2 = D10;
+const int IRPin1 = D9;
+const int IRPin2 = D10;
 
 // Pins for reed sensors
-int ReedPin = A0;
+const int ReedPin = A0;
 
 
 // Variables
-byte ledValue;
 bool autoDrive = false;
 bool forward = false;
 bool backward = false;
@@ -83,7 +82,7 @@ void rotate(String leftOrRight);
 
 void setup()
 {
-  Serial.begin(115200);
+  //Serial.begin(115200);
 
   //Movement
   pinMode(leftForwardPin, OUTPUT);
@@ -203,24 +202,48 @@ void getAllSensors(){
 }
 void selfDrive(){
 
-  //check of er slachtoffer ligt, zo ja wacht
-  if(reedVoor){delay(1500);}
+  // //check of er slachtoffer ligt, zo ja wacht
+  // if(reedVoor){delay(1500);}
 
-  //check of naar voren rijden kan, zo ja rijd naar voren
-  else if (!(usVoorLinks || usVoorRechts)) {driveForward();}
+  // //check of naar voren rijden kan, zo ja rijd naar voren
+  // else if (!(usVoorLinks || usVoorRechts)) {driveForward();}
 
-  //check of je naar links kan, zo ja rijd naar links
-  else if (!(usLinks || irLinks)) {driveLeft();}
+  // //check of je naar links kan, zo ja rijd naar links
+  // else if (!(usLinks || irLinks)) {driveLeft();}
 
-  //check of je naar rechts kan, zo ja rijd naar rechts
-  else if (!(usRechts || irRechts)) {driveRight();}
+  // //check of je naar rechts kan, zo ja rijd naar rechts
+  // else if (!(usRechts || irRechts)) {driveRight();}
 
-  //niks mogelijk rijd naar achteren
-  else {driveBackward();}
+  // //niks mogelijk rijd naar achteren
+  // else {driveBackward();}
 
 
-  //rotate("Left");
-  //rotate("Right");
+  
+  if(reedVoor) { // Check of er slachtoffer ligt, zo ja wacht
+    driveIdle();
+    delay(1500);
+  }
+  else if (usVoorLinks || usVoorRechts) { // Check of er een obstakel voor ligt
+    driveBackward();
+    delay(1000);
+    driveLeft();//driveRight();
+    delay(400);
+  }
+  else if (usLinks || irLinks) { // Check of er een obstakel links ligt
+    driveBackward();
+    delay(600);
+    driveRight();
+    delay(400);
+  }
+  else if (usRechts || irRechts) { // Check of er een obstakel rechts ligt
+    driveBackward();
+    delay(600);
+    driveLeft();
+    delay(400);
+  }
+  else { // Niets aan de hand
+    driveForward();
+  }
 }
 
 long getDistance(int trigPin){
@@ -237,8 +260,12 @@ long getDistance(int trigPin){
   return distance;
 }
 bool checkObject(int distance) {
-  if((distance > 0 && distance < 20)/* || distance > 1050*/) {return true;}
-  else {return false;}
+  if((distance > 0 && distance < 20)/* || distance > 1050*/) {
+    return true;
+  }
+  else {
+    return false;
+  }
 }
 bool getIR(int s){
   bool inputValue = digitalRead(s);
@@ -285,21 +312,4 @@ void driveRight() {
   digitalWrite(rightForwardPin, HIGH);
   digitalWrite(rightBackwardPin, LOW);
   Serial.println("Right");
-}
-
-//Rotates 45 degrees
-void rotate(String leftOrRight){
-  driveBackward();
-  delay(600);
-  if(leftOrRight == "Left" || leftOrRight == "left" || leftOrRight == "L" || leftOrRight == "l"){
-    driveLeft();
-  } 
-  else if (leftOrRight == "Right" || leftOrRight == "right" || leftOrRight == "R" || leftOrRight == "r"){
-    driveRight();
-  }
-  else {
-    // Go idle to show the problem
-    driveIdle();
-  }
-  delay(500);
 }
