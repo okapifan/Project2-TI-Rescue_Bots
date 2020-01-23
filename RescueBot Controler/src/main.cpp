@@ -132,7 +132,7 @@ void loop()
   if (autoDrive){
     getAllSensors();
     // Self drive code
-    SelfDrive();
+    selfDrive();
   }
 }
 
@@ -201,7 +201,7 @@ void getAllSensors(){
   irLinks = getIR(IRPin2);
   reedVoor = getReed(ReedPin);
 }
-void SelfDrive(){
+void selfDrive(){
 
   //check of er slachtoffer ligt , zo ja wacht
   //check of naar voren rijden kan, zo ja rijd naar voren
