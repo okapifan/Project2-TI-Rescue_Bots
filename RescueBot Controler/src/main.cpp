@@ -21,7 +21,7 @@ const char *password = "123123123";
 ESP8266WebServer server(80);
 
 // Webpages html
-#include "Page_Controler_Test.h"
+#include "Page_Controller.h"
 
 // Pins for wheels
 int leftForwardPin = D0;
@@ -73,11 +73,11 @@ bool getReed(int s);
 
 void getAllSensors();
 void selfDrive();
-void idle();
-void driveforward();
-void drivebackward();
-void driveleft();
-void driveright();
+void driveIdle();
+void driveForward();
+void driveBackward();
+void driveLeft();
+void driveRight();
 void rotate(String leftOrRight);
 
 
@@ -132,7 +132,7 @@ void loop()
   if (autoDrive){
     getAllSensors();
     // Self drive code
-    SelfDrive();
+    selfDrive();
   }
 }
 
@@ -140,7 +140,7 @@ void HandleWebsite()
 {
   //
 
-  String html = String(page_Controler_Test);
+  String html = String(page_Controller);
   server.send(200, "text/html", html);
 }
 void HandleData()
@@ -164,11 +164,11 @@ void HandleData()
   // Remote controlled driving
   if (!autoDrive)
   {
-    if (forward) {driveforward();}
-    else if (backward) {drivebackward();}
-    else if (left) {driveleft();}
-    else if (right) {driveright();}
-    else {idle();}
+    if (forward) {driveForward();}
+    else if (backward) {driveBackward();}
+    else if (left) {driveLeft();}
+    else if (right) {driveRight();}
+    else {driveIdle();}
   }
   else{
     forward = backward = left = right = false;
@@ -201,19 +201,26 @@ void getAllSensors(){
   irLinks = getIR(IRPin2);
   reedVoor = getReed(ReedPin);
 }
-void SelfDrive(){
+void selfDrive(){
 
-  //check of er slachtoffer ligt , zo ja wacht
-  //check of naar voren rijden kan, zo ja rijd naar voren
-  //check of je naar links kan, zo ja rijd naar links
-  //check of je naar rechts kan, zo ja rijd naar rechts
-  //niks mogelijk rijd naar achteren
-
+  //check of er slachtoffer ligt, zo ja wacht
   if(reedVoor){delay(1500);}
-  else if (!(usVoorLinks || usVoorRechts)) {driveforward();} 
-  else if (!(usLinks || irLinks)) {driveleft();}
-  else if (!(usRechts || irRechts)) {driveright();}
-  else {drivebackward();}
+
+  //check of naar voren rijden kan, zo ja rijd naar voren
+  else if (!(usVoorLinks || usVoorRechts)) {driveForward();}
+
+  //check of je naar links kan, zo ja rijd naar links
+  else if (!(usLinks || irLinks)) {driveLeft();}
+
+  //check of je naar rechts kan, zo ja rijd naar rechts
+  else if (!(usRechts || irRechts)) {driveRight();}
+
+  //niks mogelijk rijd naar achteren
+  else {driveBackward();}
+
+
+  //rotate("Left");
+  //rotate("Right");
 }
 
 long getDistance(int trigPin){
@@ -244,35 +251,35 @@ bool getReed(int s){
 }
 
 
-void idle() {
+void driveIdle() {
   digitalWrite(leftForwardPin, LOW);
   digitalWrite(leftBackwardPin, LOW);
   digitalWrite(rightForwardPin, LOW);
   digitalWrite(rightBackwardPin, LOW);
   Serial.println("Idle");
 }
-void driveforward() {
+void driveForward() {
   digitalWrite(leftForwardPin, HIGH);
   digitalWrite(leftBackwardPin, LOW);
   digitalWrite(rightForwardPin, HIGH);
   digitalWrite(rightBackwardPin, LOW);
   Serial.println("Forward");
 }
-void drivebackward() {
+void driveBackward() {
   digitalWrite(leftForwardPin, LOW);
   digitalWrite(leftBackwardPin, HIGH);
   digitalWrite(rightForwardPin, LOW);
   digitalWrite(rightBackwardPin, HIGH);
   Serial.println("Backward");
 }
-void driveleft() {
+void driveLeft() {
   digitalWrite(leftForwardPin, HIGH);
   digitalWrite(leftBackwardPin, LOW);
   digitalWrite(rightForwardPin, LOW);
   digitalWrite(rightBackwardPin, HIGH);
   Serial.println("Left");
 }
-void driveright() {
+void driveRight() {
   digitalWrite(leftForwardPin, LOW);
   digitalWrite(leftBackwardPin, HIGH);
   digitalWrite(rightForwardPin, HIGH);
@@ -280,14 +287,19 @@ void driveright() {
   Serial.println("Right");
 }
 
-// Rotates 45 degrees
-// void rotate(String leftOrRight){
-//   drivebackward();
-//   delay(500); //Todo
-//   if(leftOrRight = "left"){
-//     driveleft();
-//   } else if (leftOrRight = "right"){
-//     driveright();
-//   }
-//   delay(500);
-// }
+//Rotates 45 degrees
+void rotate(String leftOrRight){
+  driveBackward();
+  delay(600);
+  if(leftOrRight == "Left" || leftOrRight == "left" || leftOrRight == "L" || leftOrRight == "l"){
+    driveLeft();
+  } 
+  else if (leftOrRight == "Right" || leftOrRight == "right" || leftOrRight == "R" || leftOrRight == "r"){
+    driveRight();
+  }
+  else {
+    // Go idle to show the problem
+    driveIdle();
+  }
+  delay(500);
+}

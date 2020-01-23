@@ -1,11 +1,11 @@
 #include <avr/pgmspace.h>
 
-const char* page_Controler_Test PROGMEM = R"=====(
+const char* page_Controller PROGMEM = R"=====(
 <!DOCTYPE html>
 <html>
 
 <head>
-	<title>RescueBot 1</title>
+	<title>RescueBot 2</title>
 	<link rel='icon' type='image/png' href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAE7SURBVFhH7ZWxCsIwEIar4OTg1Bdw9l2Ejs5CQfAB3Lr5AIJQcHYs+C7OvkAnByeHSq49SeIld22VOPSDcmnTu9z9uZBRVVVRSMaNDcaQwJCA8xQkSWJMFEUxaoYipP6kArazgvrmoo0/mUAcx+QjhfJVD8VHAmmaOiv1zSFt/Y0esH/IssywSFmWzcjErvK6PIBdXLZgkTzP3/3wX6cAFbArRvA7p8BxXcfcnOpC99Mn2N1jApZUQLK/30Jf660AlUDfHpiv7mBv5xlYHVShUw9QR8p1zDi8Cthg5bgY9+6jtQK67NQWcPMugh9DSEAivy4rjtUFg5cMNe8D1xQpgPulAmNw/Sxz8z6gCTkFpMFsJHFZBbourpD4/rwJuSQgAddPfarXoeLgN+MyCsHPt4BjSGBIIHACUfQCT6Sg3fQBeLMAAAAASUVORK5CYII=" />
 	<meta name="theme-color" content="#4286f4">
 
