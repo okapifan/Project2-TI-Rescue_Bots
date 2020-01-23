@@ -21,7 +21,7 @@ const char *password = "123123123";
 ESP8266WebServer server(80);
 
 // Webpages html
-#include "Page_Controler_Test.h"
+#include "Page_Controller.h"
 
 // Pins for wheels
 int leftForwardPin = D0;
@@ -140,7 +140,7 @@ void HandleWebsite()
 {
   //
 
-  String html = String(page_Controler_Test);
+  String html = String(page_Controller);
   server.send(200, "text/html", html);
 }
 void HandleData()
