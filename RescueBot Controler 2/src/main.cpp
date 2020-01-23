@@ -1,4 +1,13 @@
 /*
+	Vak: Project 2 (TINPRO02-2)
+	Klas: TI1D
+  Groep: 4
+	  Annelot Jansen
+    Daniël van der Drift
+    Daylan de Lange
+    Zoë Zegers
+
+	RescueBot 2
 */
 
 // Libraries
@@ -15,14 +24,11 @@ ESP8266WebServer server(80);
 // Webpages html
 #include "Page_Controler_Test.h"
 
-// IO
-const byte ledPin = LED_BUILTIN; // LED_BUILTIN
-
 // Pins for wheels
-int leftForward = D1;
-int leftBackward = D0;
-int rightForward = D5;
-int rightBackward = D2;
+int leftForwardPin = D1;
+int leftBackwardPin = D0;
+int rightForwardPin = D5;
+int rightBackwardPin = D2;
 
 // Variables
 byte ledValue;
@@ -35,38 +41,26 @@ bool right = false;
 
 
 // Functions
-void HandleWebsite();
-void HandleData();
+void getAllSensors();
+void selfDrive();
+void idle();
 void driveforward();
 void drivebackward();
 void driveleft();
 void driveright();
-void idle();
 
 
 void setup()
 {
   Serial.begin(115200);
-  pinMode(ledPin, OUTPUT); // Question: hebben we een LED nodig
-
+  
   //Movement
-  pinMode(leftForward, OUTPUT);
-  pinMode(leftBackward, OUTPUT);
-  pinMode(rightForward, OUTPUT);
-  pinMode(rightBackward, OUTPUT);
+  pinMode(leftForwardPin, OUTPUT);
+  pinMode(leftBackwardPin, OUTPUT);
+  pinMode(rightForwardPin, OUTPUT);
+  pinMode(rightBackwardPin, OUTPUT);
 
-
-  /*Serial.print("Connecting to ");
-  Serial.println(ssid);
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
-		delay(500);
-		Serial.print(".");
-	}
-  Serial.println("WiFi connected");*/
-
-  Serial.print("Setting AP (Access Point)…");
+  Serial.print("Setting AP (Access Point)");
   // Remove the password parameter, if you want the AP (Access Point) to be open
   WiFi.softAP(ssid, password);
 
@@ -95,7 +89,6 @@ void HandleWebsite()
   String html = String(page_Controler_Test);
   server.send(200, "text/html", html);
 }
-
 void HandleData()
 {
   // /data?forward=___&backward=___&left=___&right=___
@@ -123,37 +116,38 @@ void HandleData()
   server.send(200, "text/json", json);
 }
 
-void driveforward() {
-  digitalWrite(leftForward, HIGH);
-  digitalWrite(leftBackward, LOW);
-  digitalWrite(rightForward, HIGH);
-  digitalWrite(rightBackward, LOW);
-}
-
-void drivebackward() {
-  digitalWrite(leftForward, LOW);
-  digitalWrite(leftBackward, HIGH);
-  digitalWrite(rightForward, LOW);
-  digitalWrite(rightBackward, HIGH);
-}
-
-void driveleft() {
-  digitalWrite(leftForward, HIGH);
-  digitalWrite(leftBackward, LOW);
-  digitalWrite(rightForward, LOW);
-  digitalWrite(rightBackward, HIGH);
-}
-
-void driveright() {
-  digitalWrite(leftForward, LOW);
-  digitalWrite(leftBackward, HIGH);
-  digitalWrite(rightForward, HIGH);
-  digitalWrite(rightBackward, LOW);
-}
-
 void idle() {
-  digitalWrite(leftForward, LOW);
-  digitalWrite(leftBackward, LOW);
-  digitalWrite(rightForward, LOW);
-  digitalWrite(rightBackward, LOW);
+  digitalWrite(leftForwardPin, LOW);
+  digitalWrite(leftBackwardPin, LOW);
+  digitalWrite(rightForwardPin, LOW);
+  digitalWrite(rightBackwardPin, LOW);
+  Serial.println("Idle");
+}
+void driveforward() {
+  digitalWrite(leftForwardPin, HIGH);
+  digitalWrite(leftBackwardPin, LOW);
+  digitalWrite(rightForwardPin, HIGH);
+  digitalWrite(rightBackwardPin, LOW);
+  Serial.println("Forward");
+}
+void drivebackward() {
+  digitalWrite(leftForwardPin, LOW);
+  digitalWrite(leftBackwardPin, HIGH);
+  digitalWrite(rightForwardPin, LOW);
+  digitalWrite(rightBackwardPin, HIGH);
+  Serial.println("Backward");
+}
+void driveleft() {
+  digitalWrite(leftForwardPin, HIGH);
+  digitalWrite(leftBackwardPin, LOW);
+  digitalWrite(rightForwardPin, LOW);
+  digitalWrite(rightBackwardPin, HIGH);
+  Serial.println("Left");
+}
+void driveright() {
+  digitalWrite(leftForwardPin, LOW);
+  digitalWrite(leftBackwardPin, HIGH);
+  digitalWrite(rightForwardPin, HIGH);
+  digitalWrite(rightBackwardPin, LOW);
+  Serial.println("Right");
 }

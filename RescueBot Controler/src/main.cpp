@@ -1,11 +1,19 @@
 /*
+	Vak: Project 2 (TINPRO02-2)
+	Klas: TI1D
+  Groep: 4
+	  Annelot Jansen
+    Daniël van der Drift
+    Daylan de Lange
+    Zoë Zegers
+
+	RescueBot 1
 */
 
 // Libraries
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
-//#include <WiFiUdp.h>
 
 // Wifi settings
 const char *ssid = "TI1D_4_RB1";
@@ -15,28 +23,25 @@ ESP8266WebServer server(80);
 // Webpages html
 #include "Page_Controler_Test.h"
 
-// IO
-const byte ledPin = LED_BUILTIN; // LED_BUILTIN
-
 // Pins for wheels
-int leftForward = D0;
-int leftBackward = D1;
-int rightForward = D2;
-int rightBackward = D5;
+int leftForwardPin = D0;
+int leftBackwardPin = D1;
+int rightForwardPin = D2;
+int rightBackwardPin = D5;
 
 // Pins for ultrasoon sensor
-int trigPin = D3; // Todo set pin
-int trigPin2 = D6; //voorLinks
-int trigPin3 = D7; //voorRechts
-int trigPin4 = D8; //rechts
-int echoPin = D4; // Todo set pin
+int trigPin1 = D3; // Links
+int trigPin2 = D6; // VoorLinks
+int trigPin3 = D7; // VoorRechts
+int trigPin4 = D8; // Rechts
+int echoPin = D4;
 
 // Pins for ir sensor
-int ProxSensor = D9; // Todo set pin
-int ProxSensor2 = D10;
+int IRPin1 = D9;
+int IRPin2 = D10;
 
 // Pins for reed sensors
-int ReedSensor = A0;
+int ReedPin = A0;
 
 
 // Variables
@@ -47,7 +52,7 @@ bool backward = false;
 bool left = false;
 bool right = false;
 
-//sensors
+// Sensors
 bool usLinks;
 bool usVoorLinks;
 bool usVoorRechts;
@@ -60,55 +65,47 @@ bool reedVoor;
 void HandleWebsite();
 void HandleData();
 void HandleDebug();
-void fullAuto();
+
 long getDistance(int trigPin);
-int readIr(int s);
-bool readReed(int s);
+bool checkObject(int distance);
+bool getIR(int s);
+bool getReed(int s);
+
+void getAllSensors();
+void selfDrive();
+void idle();
 void driveforward();
 void drivebackward();
 void driveleft();
 void driveright();
-void idle();
 void rotate(String leftOrRight);
-bool checkObject(int distance);
 
 
 void setup()
 {
   Serial.begin(115200);
-  pinMode(ledPin, OUTPUT); // Question: hebben we een LED nodig
 
   //Movement
-  pinMode(leftForward, OUTPUT);
-  pinMode(leftBackward, OUTPUT);
-  pinMode(rightForward, OUTPUT);
-  pinMode(rightBackward, OUTPUT);
+  pinMode(leftForwardPin, OUTPUT);
+  pinMode(leftBackwardPin, OUTPUT);
+  pinMode(rightForwardPin, OUTPUT);
+  pinMode(rightBackwardPin, OUTPUT);
 
   //Ultrasoon Sensor
   pinMode (echoPin, INPUT);
-  pinMode (trigPin, OUTPUT);
+  pinMode (trigPin1, OUTPUT);
   pinMode (trigPin2, OUTPUT);
   pinMode (trigPin3, OUTPUT);
   pinMode (trigPin4, OUTPUT);
 
   //IR-Sensor
-  pinMode(ProxSensor,INPUT);
-  pinMode(ProxSensor2,INPUT);
+  pinMode(IRPin1,INPUT);
+  pinMode(IRPin2,INPUT);
 
   //Reed-Sensor
-  pinMode(ReedSensor,INPUT);
+  pinMode(ReedPin,INPUT);
 
-  /*Serial.print("Connecting to ");
-  Serial.println(ssid);
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
-		delay(500);
-		Serial.print(".");
-	}
-  Serial.println("WiFi connected");*/
-
-  Serial.print("Setting AP (Access Point)…");
+  Serial.print("Setting AP (Access Point)");
   // Remove the password parameter, if you want the AP (Access Point) to be open
   WiFi.softAP(ssid, password);
 
@@ -130,9 +127,12 @@ void loop()
 {
   server.handleClient();
 
+  // getAllSensors(); // Debug,  Get all sensor value without self driving enables
+
   if (autoDrive){
+    getAllSensors();
     // Self drive code
-    fullAuto();
+    SelfDrive();
   }
 }
 
@@ -143,12 +143,12 @@ void HandleWebsite()
   String html = String(page_Controler_Test);
   server.send(200, "text/html", html);
 }
-
 void HandleData()
 {
   // /data?forward=___&backward=___&left=___&right=___
   // /data?autodrive=___
 
+  // Parse button input
   if (server.arg("forward").toInt() > 0) {
     forward = server.arg("forward").toInt() - 1; //forward
     backward = server.arg("backward").toInt() - 1; //backward
@@ -156,10 +156,12 @@ void HandleData()
     right = server.arg("right").toInt() - 1; //go to right
   }
 
+  // Parse autodrive toggle
   if (server.arg("autodrive").toInt() > 0) {
     autoDrive = server.arg("autodrive").toInt() - 1;
   }
 
+  // Remote controlled driving
   if (!autoDrive)
   {
     if (forward) {driveforward();}
@@ -172,10 +174,9 @@ void HandleData()
     forward = backward = left = right = false;
   }
 
-  String json = "{\"top\": " + (String)forward + ",\"bottom\": " + (String)backward + ",\"left\": " + (String)left + ",\"right\": " + (String)right + "}";
+  String json = "{\"top\": " + (String)forward + ",\"bottom\": " + (String)backward + ",\"left\": " + (String)left + ",\"right\": " + (String)right + ",\"autoDrive\": " + (String)autoDrive + "}";
   server.send(200, "text/json", json);
 }
-
 void HandleDebug()
 {
   // /debug
@@ -190,16 +191,17 @@ void HandleDebug()
   server.send(200, "text", text);
 }
 
-void fullAuto(){
 
-
-  usLinks = checkObject(getDistance(trigPin));
+void getAllSensors(){
+  usLinks = checkObject(getDistance(trigPin1));
   usVoorLinks = checkObject(getDistance(trigPin2));
   usVoorRechts = checkObject(getDistance(trigPin3));
   usRechts = checkObject(getDistance(trigPin4));
-  irRechts = checkObject(readIr(ProxSensor));
-  irLinks = checkObject(readIr(ProxSensor2));
-  reedVoor = readReed(ReedSensor);
+  irRechts = getIR(IRPin1);
+  irLinks = getIR(IRPin2);
+  reedVoor = getReed(ReedPin);
+}
+void SelfDrive(){
 
   //check of er slachtoffer ligt , zo ja wacht
   //check of naar voren rijden kan, zo ja rijd naar voren
@@ -212,7 +214,7 @@ void fullAuto(){
   else if (!(usLinks || irLinks)) {driveleft();}
   else if (!(usRechts || irRechts)) {driveright();}
   else {drivebackward();}
- }
+}
 
 long getDistance(int trigPin){
   digitalWrite(trigPin, LOW);
@@ -227,56 +229,55 @@ long getDistance(int trigPin){
   Serial.println(trigPin + ": " + distance);
   return distance;
 }
-
-int readIr(int s){ //Todo fix this stupid name
-  int inputValue = digitalRead(s);
+bool checkObject(int distance) {
+  if((distance > 0 && distance < 20)/* || distance > 1050*/) {return true;}
+  else {return false;}
+}
+bool getIR(int s){
+  bool inputValue = digitalRead(s);
   return inputValue;
 }
-
-bool readReed(int s){ //Todo fix this stupid name
+bool getReed(int s){
   int inputValue1 = analogRead(s);
   bool inputValue = (inputValue1 < 512);
   return inputValue;
 }
 
-void driveforward() {
-  digitalWrite(leftForward, HIGH);
-  digitalWrite(leftBackward, LOW);
-  digitalWrite(rightForward, HIGH);
-  digitalWrite(rightBackward, LOW);
-  Serial.println("Forward");
-}
-
-void drivebackward() {
-  digitalWrite(leftForward, LOW);
-  digitalWrite(leftBackward, HIGH);
-  digitalWrite(rightForward, LOW);
-  digitalWrite(rightBackward, HIGH);
-  Serial.println("Backward");
-}
-
-void driveleft() {
-  digitalWrite(leftForward, HIGH);
-  digitalWrite(leftBackward, LOW);
-  digitalWrite(rightForward, LOW);
-  digitalWrite(rightBackward, HIGH);
-  Serial.println("Left");
-}
-
-void driveright() {
-  digitalWrite(leftForward, LOW);
-  digitalWrite(leftBackward, HIGH);
-  digitalWrite(rightForward, HIGH);
-  digitalWrite(rightBackward, LOW);
-  Serial.println("Right");
-}
 
 void idle() {
-  digitalWrite(leftForward, LOW);
-  digitalWrite(leftBackward, LOW);
-  digitalWrite(rightForward, LOW);
-  digitalWrite(rightBackward, LOW);
+  digitalWrite(leftForwardPin, LOW);
+  digitalWrite(leftBackwardPin, LOW);
+  digitalWrite(rightForwardPin, LOW);
+  digitalWrite(rightBackwardPin, LOW);
   Serial.println("Idle");
+}
+void driveforward() {
+  digitalWrite(leftForwardPin, HIGH);
+  digitalWrite(leftBackwardPin, LOW);
+  digitalWrite(rightForwardPin, HIGH);
+  digitalWrite(rightBackwardPin, LOW);
+  Serial.println("Forward");
+}
+void drivebackward() {
+  digitalWrite(leftForwardPin, LOW);
+  digitalWrite(leftBackwardPin, HIGH);
+  digitalWrite(rightForwardPin, LOW);
+  digitalWrite(rightBackwardPin, HIGH);
+  Serial.println("Backward");
+}
+void driveleft() {
+  digitalWrite(leftForwardPin, HIGH);
+  digitalWrite(leftBackwardPin, LOW);
+  digitalWrite(rightForwardPin, LOW);
+  digitalWrite(rightBackwardPin, HIGH);
+  Serial.println("Left");
+}
+void driveright() {
+  digitalWrite(leftForwardPin, LOW);
+  digitalWrite(leftBackwardPin, HIGH);
+  digitalWrite(rightForwardPin, HIGH);
+  digitalWrite(rightBackwardPin, LOW);
+  Serial.println("Right");
 }
 
 // Rotates 45 degrees
@@ -290,8 +291,3 @@ void idle() {
 //   }
 //   delay(500);
 // }
-
-bool checkObject(int distance) {
-  if((distance > 0 && distance < 20)/* || distance > 1050*/) {return true;}
-  else {return false;}
-}
