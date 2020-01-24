@@ -126,7 +126,7 @@ void loop()
 {
   server.handleClient();
 
-  // getAllSensors(); // Debug,  Get all sensor value without self driving enables
+  //getAllSensors(); // Debug,  Get all sensor value without self driving enables
 
   if (autoDrive){
     getAllSensors();
@@ -193,7 +193,7 @@ void HandleDebug()
 
 void getAllSensors(){
   usLinks = checkObject(getDistance(trigPin1));
-  usVoorLinks = checkObject(getDistance(trigPin2));
+  //usVoorLinks = checkObject(getDistance(trigPin2));
   usVoorRechts = checkObject(getDistance(trigPin3));
   usRechts = checkObject(getDistance(trigPin4));
   irRechts = getIR(IRPin1);
@@ -229,17 +229,24 @@ void selfDrive(){
     driveLeft();//driveRight();
     delay(400);
   }
-  else if (usLinks || irLinks) { // Check of er een obstakel links ligt
+
+  else if (irRechts) { // Check of er een obstakel rechts ligt
+    driveBackward();
+    delay(400);
+    driveLeft();
+    delay(600);
+  }
+  else if (irLinks) { // Check of er een obstakel links ligt
     driveBackward();
     delay(400);
     driveRight();
     delay(600);
   }
-  else if (usRechts || irRechts) { // Check of er een obstakel rechts ligt
-    driveBackward();
-    delay(400);
+  else if (usLinks) { // Check of er een obstakel links ligt
+    driveRight();
+  }
+  else if (usRechts) { // Check of er een obstakel rechts ligt
     driveLeft();
-    delay(600);
   }
   else { // Niets aan de hand
     driveForward();
@@ -260,7 +267,7 @@ long getDistance(int trigPin){
   return distance;
 }
 bool checkObject(int distance) {
-  if((distance > 0 && distance < 20)/* || distance > 1050*/) {
+  if((distance > 0 && distance < 10)/* || distance > 1050*/) {
     return true;
   }
   else {
@@ -283,33 +290,28 @@ void driveIdle() {
   digitalWrite(leftBackwardPin, LOW);
   digitalWrite(rightForwardPin, LOW);
   digitalWrite(rightBackwardPin, LOW);
-  Serial.println("Idle");
 }
 void driveForward() {
   digitalWrite(leftForwardPin, HIGH);
   digitalWrite(leftBackwardPin, LOW);
   digitalWrite(rightForwardPin, HIGH);
   digitalWrite(rightBackwardPin, LOW);
-  Serial.println("Forward");
 }
 void driveBackward() {
   digitalWrite(leftForwardPin, LOW);
   digitalWrite(leftBackwardPin, HIGH);
   digitalWrite(rightForwardPin, LOW);
   digitalWrite(rightBackwardPin, HIGH);
-  Serial.println("Backward");
-}
-void driveLeft() {
-  digitalWrite(leftForwardPin, HIGH);
-  digitalWrite(leftBackwardPin, LOW);
-  digitalWrite(rightForwardPin, LOW);
-  digitalWrite(rightBackwardPin, HIGH);
-  Serial.println("Left");
 }
 void driveRight() {
   digitalWrite(leftForwardPin, LOW);
   digitalWrite(leftBackwardPin, HIGH);
   digitalWrite(rightForwardPin, HIGH);
   digitalWrite(rightBackwardPin, LOW);
-  Serial.println("Right");
+}
+void driveLeft() {
+  digitalWrite(leftForwardPin, HIGH);
+  digitalWrite(leftBackwardPin, LOW);
+  digitalWrite(rightForwardPin, LOW);
+  digitalWrite(rightBackwardPin, HIGH);
 }

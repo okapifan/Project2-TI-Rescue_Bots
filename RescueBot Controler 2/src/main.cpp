@@ -48,7 +48,8 @@ void driveforward();
 void drivebackward();
 void driveleft();
 void driveright();
-
+void HandleWebsite();
+void HandleData();  
 
 void setup()
 {
