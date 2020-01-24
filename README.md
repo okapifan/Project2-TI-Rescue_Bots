@@ -5,4 +5,4 @@
 
 ## Inleiding
 Dit is een project voor de opleiding Technische Informatica waarin 2 rescue-bots moet worden gebouwd. 
-Dit project is gemaakt door [Daylan](https://github.com/Daylandelange), [Zoë](https://github.com/okapifan), [Annelot](), en [Daniël](https://github.com/Danielvdd1),
+Dit project is gemaakt door [Daylan](https://github.com/Daylandelange), [Zoë](https://github.com/okapifan), [Annelot](https://github.com/annelotJanssen), en [Daniël](https://github.com/Danielvdd1),
